@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+           body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #87CEEB, #E0F2F7); /* Sky gradient */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Hide scrollbar for animation */
+        }
+        .cloud {
+            position: absolute;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/6122/6122561.png');
+            background-size: contain; /* Ensure the image fits within the div */
+            background-repeat: no-repeat;
+            opacity: 0.7;
+            animation: moveCloud 20s linear infinite;
+            z-index: 0; /* Ensure clouds are behind */
+        }
+
+        /* Increase the width and height values to make the clouds bigger */
+        .cloud1 { top: 10%; left: 30%; width: 150px; height: 60px; animation-delay: 4s; } /* Increased size */
+        .cloud2 { top: 40%; right: 25%; width: 180px; height: 70px; animation-delay: 9s; } /* Increased size */
+        .cloud3 { bottom: 25%; left: 15%; width: 160px; height: 65px; animation-delay: 14s; } /* Increased size */
+        .cloud4 { bottom: 10%; right: 5%; width: 140px; height: 55px; animation-delay: 18s; } /* Increased size */
+
+
+
+        @keyframes moveCloud {
+            0% { transform: translateX(-200px); }
+            100% { transform: translateX(calc(100vw + 200px)); }
+        }
+
+        .weather-container {
+            z-index: 1;
+            background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .weather-container h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #03a9f4;
+            outline: none;
+        }
+
+        button {
+            background-color: #03a9f4;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            margin-top: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease-out;
+        }
+
+        button:hover {
+            background-color: #0288d1;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #weather-result {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            text-align: left;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        #weather-result h3 {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        #weather-result p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: #03a9f4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+    <div class="cloud cloud4"></div>
+    <div class="weather-container" id="weather-app">
+        <h2>Weather in Your City</h2>
+        <label for="city-input">Enter City:</label>
+        <input type="text" id="city-input"><br><br>
+        <button onclick="getWeather()">Get Weather</button>
+        <div id="weather-result"></div>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        // Get the reference to the weather result div
+        const weatherResultDiv = document.getElementById('weather-result');
+
+        async function getWeather() {
+            const city = document.getElementById('city-input').value;
+            if (!city) {
+                alert('Please enter a city.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/weather/${city}`);
+                const data = await response.json();
+                if (response.ok) {
+                    const weatherInfo = `
+                        <h3>Weather in ${data.name}, ${data.sys.country}</h3>
+                        <p>Temperature: ${data.main.temp}°C</p>
+                        <p>Description: ${data.weather[0].description}</p>
+                        <p>Humidity: ${data.main.humidity}%</p>
+                    `;
+                    weatherResultDiv.innerHTML = weatherInfo;
+                } else {
+                    weatherResultDiv.innerHTML = `<p>Error fetching weather: ${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error('Error fetching weather:', error);
+                weatherResultDiv.innerHTML = '<p>An error occurred while fetching weather data.</p>';
+            }
+        }
+
+        function logout() {
+            alert('Logged out.');
+            window.location.href = '/login.html'; // Redirect to login page
+        }
+    </script>
+</body>
+</html>
