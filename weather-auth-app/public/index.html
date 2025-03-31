@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom, #63B8FF, #ABDEFF);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cloud {
+            position: absolute;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/6122/6122561.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+            animation: moveCloud 25s linear infinite;
+            z-index: 0;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .cloud1 { top: 15%; left: 5%; width: 180px; height: 70px; animation-delay: 3s; }
+        .cloud2 { top: 30%; right: 10%; width: 220px; height: 85px; animation-delay: 8s; }
+        .cloud3 { bottom: 35%; left: 20%; width: 160px; height: 60px; animation-delay: 13s; }
+        .cloud4 { bottom: 10%; right: 15%; width: 200px; height: 75px; animation-delay: 18s; }
+
+        @keyframes moveCloud {
+            0% { transform: translateX(-300px); }
+            100% { transform: translateX(calc(100vw + 300px)); }
+        }
+
+        .auth-container {
+            z-index: 1;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            width: 350px;
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .auth-container h2 {
+            color: #2C3E50;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #34495E;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 12px; /* Increased padding slightly */
+            margin-bottom: 10px;
+            border: 1px solid #BDC3C7;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+            font-size: 1.1em; /* Increased font size */
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            border-color: #3498DB;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        button {
+            background-color: #3498DB;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease-out;
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.4);
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #2980B9;
+            transform: scale(1.03);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        p {
+            margin-top: 15px;
+            color: #7F8C8D;
+            font-size: 0.85em;
+        }
+
+        a {
+            color: #3498DB;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+    <div class="cloud cloud4"></div>
+    <div class="auth-container" id="registration-form">
+        <h2>Create Account</h2>
+        <label for="register-name">Name:</label>
+        <input type="text" id="register-name" required><br><br>
+        <label for="register-email">Email:</label>
+        <input type="email" id="register-email" required><br><br>
+        <label for="register-password">Password:</label>
+        <input type="password" id="register-password" required><br><br>
+        <button onclick="register()">Sign Up</button>
+        <p>Already have an account? <a href="/login.html">Log In</a></p>
+    </div>
+
+    <script>
+        async function register() {
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const name = document.getElementById('register-name').value;
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password, name })
+                });
+
+                console.log('Register Response Status:', response.status);
+                console.log('Register Response Text:', await response.text());
+
+                if (response.ok) {
+                    alert('Registration successful!');
+                    window.location.href = '/login.html';
+                } else {
+                    alert(`Registration failed: ${response.status} - ${await response.text()}`);
+                }
+            } catch (error) {
+                console.error('Error during registration:', error);
+                alert('An error occurred during registration.');
+            }
+        }
+    </script>
+</body>
+</html>
